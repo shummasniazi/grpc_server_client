@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:grpc/grpc.dart';
+import 'package:grpc_client/ui/view_all_products.dart';
 
 import 'dart_grpc_server.dart';
 
@@ -55,6 +56,8 @@ class _ClientAppState extends State<ClientApp> {
                 onPressed: () {
                   // Handle View All Products
                   _viewAllProducts();
+
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ViewAllProductsScreen()));
                 },
                 child: Text('View All Products'),
               ),
