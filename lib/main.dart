@@ -2,12 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:grpc/grpc.dart';
-import 'package:grpc_client/ui/view_all_products.dart';
-
+import 'package:grpc_client/view_all/ui/view_all_products.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:grpc_client/view_all/view_all_product_bloc/bloc.dart';
 import 'dart_grpc_server.dart';
 
 void main() {
-  runApp(ClientApp());
+  runApp(MultiBlocProvider(
+    providers: [
+      BlocProvider<ViewAllProductBloc>(
+          create: (context) => ViewAllProductBloc()),
+    ],
+    child: MaterialApp(home: ClientApp()),
+  ));
 }
 
 class ClientApp extends StatefulWidget {
@@ -20,6 +27,7 @@ class _ClientAppState extends State<ClientApp> {
   GroceriesServiceClient? stub;
   var response;
   bool executionInProgress = true;
+
 
   @override
   void initState() {
@@ -41,55 +49,48 @@ class _ClientAppState extends State<ClientApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Dart Store API'),
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('Welcome to the Dart Store API'),
-              Text('What do you want to do?'),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle View All Products
-                  _viewAllProducts();
-
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => ViewAllProductsScreen()));
-                },
-                child: Text('View All Products'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Handle Add New Product
-                  _addNewProduct();
-                },
-                child: Text('Add New Product'),
-              ),
-              // Add buttons and handlers for other options
-            ],
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Dart Store API'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Welcome to the Dart Store API'),
+            Text('What do you want to do?'),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ViewAllProductsScreen()));
+              },
+              child: Text('View All Products'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Handle Add New Product
+                _addNewProduct();
+              },
+              child: Text('Add New Product'),
+            ),
+            // Add buttons and handlers for other options
+          ],
         ),
       ),
     );
   }
 
-  Future<Category> _findCategoryByName(String name)async {
-    var category =
-    Category()
-      ..name = name
-    ;
+  Future<Category> _findCategoryByName(String name) async {
+    var category = Category()..name = name;
     category = await stub!.getCategory(category);
     return category;
   }
 
-  Future<Item> _findItemByName(String name)async {
-    var item =
-    Item()
-      ..name = name
-    ;
+  Future<Item> _findItemByName(String name) async {
+    var item = Item()..name = name;
     item = await stub!.getItem(item);
     return item;
   }
@@ -100,7 +101,8 @@ class _ClientAppState extends State<ClientApp> {
     response = await stub!.getAllItems(Empty());
     print(' --- Store products --- ');
     response.items.forEach((item) {
-      print('✅: ${item.name} (id: ${item.id} | categoryId: ${item.categoryId})');
+      print(
+          '✅: ${item.name} (id: ${item.id} | categoryId: ${item.categoryId})');
     });
   }
 
@@ -108,23 +110,24 @@ class _ClientAppState extends State<ClientApp> {
     print('Enter product name');
     var name = "apple";
     var item = await _findItemByName(name);
-    if(item.id != 0){
+    if (item.id != 0) {
       print('🔴 product already exists: name ${item.name} | id: ${item.id} ');
-    }else{
+    } else {
       print('Enter product\'s category name');
       var categoryName = "Fruits";
       var category = await _findCategoryByName(categoryName);
-      if(category.id == 0){
-        print('🔴 category $categoryName does not exists, try creating it first');
-      }else{
+      if (category.id == 0) {
+        print(
+            '🔴 category $categoryName does not exists, try creating it first');
+      } else {
         item = Item()
           ..name = name
           ..id = _randomId()
           ..categoryId = category.id;
         response = await stub!.createItem(item);
-        print('✅ product created | name ${response.name} | id ${response.id} | category id ${response.categoryId}');
+        print(
+            '✅ product created | name ${response.name} | id ${response.id} | category id ${response.categoryId}');
       }
-
     }
     // Implement the add new product logic here
     // Use setState to update the UI with the result
