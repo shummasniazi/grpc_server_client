@@ -27,7 +27,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       Emitter<ProductsState> emit) async {
     emit(AddProductLoadingState());
     try {
-      final response = await repository.viewAllProducts();
+      final response = await repository.addNewProducts(event.productName,event.categoryName);
       if (response.items.isEmpty) {
 
       } else {

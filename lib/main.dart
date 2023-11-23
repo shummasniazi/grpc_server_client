@@ -2,8 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:grpc/grpc.dart';
 import 'package:grpc_client/products/bloc/product_bloc/bloc.dart';
+import 'package:grpc_client/products/ui/add_new_product.dart';
 import 'package:grpc_client/products/ui/view_all_products.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'categories/bloc/categories_bloc/bloc.dart';
+import 'categories/bloc/categories_bloc/event.dart';
+import 'categories/bloc/categories_bloc/state.dart';
 import 'dart_grpc_server.dart';
 
 void main() {
@@ -27,10 +31,14 @@ class _ClientAppState extends State<ClientApp> {
   var response;
   bool executionInProgress = true;
 
+  Categories? categories;
 
+  CategoriesBloc? categoriesBloc;
   @override
   void initState() {
     super.initState();
+    categoriesBloc = CategoriesBloc();
+    categoriesBloc!.add(ViewAllCategory());
     channel = ClientChannel(
       'localhost',
       port: 50000,
@@ -68,12 +76,20 @@ class _ClientAppState extends State<ClientApp> {
               },
               child: Text('View All Products'),
             ),
-            ElevatedButton(
-              onPressed: () {
-                // Handle Add New Product
-                _addNewProduct();
+            BlocConsumer<CategoriesBloc, CategoriesState>(
+              bloc: categoriesBloc,
+              listener: (context, state) {
+                if(state is CategoriesLoadedState){
+                  categories = state.viewAll;
+                }
+                // TODO: implement listener
               },
-              child: Text('Add New Product'),
+              builder: (context, state) {
+                return ElevatedButton(
+                  onPressed: ()=>displayAddProductSheet(context, allCategories:categories),
+                  child: Text('Add New Product'),
+                );
+              },
             ),
             // Add buttons and handlers for other options
           ],
@@ -83,13 +99,15 @@ class _ClientAppState extends State<ClientApp> {
   }
 
   Future<Category> _findCategoryByName(String name) async {
-    var category = Category()..name = name;
+    var category = Category()
+      ..name = name;
     category = await stub!.getCategory(category);
     return category;
   }
 
   Future<Item> _findItemByName(String name) async {
-    var item = Item()..name = name;
+    var item = Item()
+      ..name = name;
     item = await stub!.getItem(item);
     return item;
   }
@@ -125,7 +143,8 @@ class _ClientAppState extends State<ClientApp> {
           ..categoryId = category.id;
         response = await stub!.createItem(item);
         print(
-            '✅ product created | name ${response.name} | id ${response.id} | category id ${response.categoryId}');
+            '✅ product created | name ${response.name} | id ${response
+                .id} | category id ${response.categoryId}');
       }
     }
     // Implement the add new product logic here
