@@ -23,24 +23,15 @@ displayAddProductSheet(context, {allCategories}) {
                 result ??= false;
                 return result;
               },
-              child: GestureDetector(
-                onTap: () {},
-                child: MultiBlocProvider(
-                  providers: const [
-                    // BlocProvider<SubmitRatingBloc>(
-                    //     create: (context) => SubmitRatingBloc()),
-                  ],
-                  child: Container(
-                    // width: getScreenWidth(context),
-                    // height: 300,
-                    padding: const EdgeInsets.only(
-                      left: 20.0,
-                      right: 20,
-                      bottom: 20,
-                    ),
-                    child: AddProduct(allCategories: allCategories),
-                  ),
+              child: Container(
+                // width: getScreenWidth(context),
+                height: 500,
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                  right: 20,
+                  bottom: 20,
                 ),
+                child: AddProduct(allCategories: allCategories),
               ),
             ));
       });
@@ -63,14 +54,24 @@ class _AddProductState extends State<AddProduct> {
   TextEditingController nameController = TextEditingController();
   String? categoryName;
   ProductsBloc? productsBloc;
+  bool viewCategories = false;
 
-  bool categorySelected = false;
+  List<String> categoriesNames = [];
 
   @override
   void initState() {
     productsBloc = ProductsBloc();
+    parseItemsList();
+
     // TODO: implement initState
     super.initState();
+  }
+
+  parseItemsList() {
+    for (var i = 0; i < widget.allCategories!.categories.length; i++) {
+      categoriesNames.add(widget.allCategories!.categories[i].name);
+    }
+    return categoriesNames;
   }
 
   @override
@@ -118,36 +119,50 @@ class _AddProductState extends State<AddProduct> {
                 ),
               ),
             ),
-            const Text("Select Category"),
-            SizedBox(
-              height: 100,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.allCategories!.categories.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return InkWell(
-                      onTap: () {
-                        if(categorySelected){
-                          setState(() {
-                            categorySelected = !categorySelected;
-                            categoryName =
-                                widget.allCategories!.categories[index].name;
-                          });
-                        }{
-                          setState(() {
-                            categorySelected = true;
-                            categoryName =
-                                widget.allCategories!.categories[index].name;
-                          });
-                        }
 
+            // DropdownButton<String>(
+            //   items: <String>[categoriesNames.toString()].map((String value) {
+            //     return DropdownMenuItem<String>(
+            //       value: value,
+            //       child: Text(value),
+            //     );
+            //   }).toList(),
+            //   onChanged: (_) {
+            //     categoryName = _;
+            //   },
+            // ),
 
-                      },
-                      child:
-                          Text(widget.allCategories!.categories[index].name,style: TextStyle(color:categorySelected?Colors.green: Colors.black),),);
+            ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    viewCategories = true;
+                  });
                 },
-              ),
-            ),
+                child: const Text('select Category')),
+            viewCategories
+                ? SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: widget.allCategories!.categories.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return InkWell(
+                          onTap: () {
+                            setState(() {
+                              categoryName =
+                                  widget.allCategories!.categories[index].name;
+                              viewCategories = false;
+                            });
+                          },
+                          child: Container(
+                              margin: const EdgeInsets.all(10),
+                              child: Text(widget
+                                  .allCategories!.categories[index].name)),
+                        );
+                      },
+                    ),
+                  )
+                : Container(),
             ElevatedButton(
               onPressed: () {
                 productsBloc!

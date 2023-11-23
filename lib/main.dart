@@ -13,8 +13,8 @@ import 'dart_grpc_server.dart';
 void main() {
   runApp(MultiBlocProvider(
     providers: [
-      BlocProvider<ProductsBloc>(
-          create: (context) => ProductsBloc()),
+      BlocProvider<ProductsBloc>(create: (context) => ProductsBloc()),
+      BlocProvider<CategoriesBloc>(create: (context) => CategoriesBloc()),
     ],
     child: MaterialApp(home: ClientApp()),
   ));
@@ -34,6 +34,7 @@ class _ClientAppState extends State<ClientApp> {
   Categories? categories;
 
   CategoriesBloc? categoriesBloc;
+
   @override
   void initState() {
     super.initState();
@@ -71,22 +72,22 @@ class _ClientAppState extends State<ClientApp> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            ViewAllProductsScreen()));
+                        builder: (context) => ViewAllProductsScreen()));
               },
               child: Text('View All Products'),
             ),
             BlocConsumer<CategoriesBloc, CategoriesState>(
               bloc: categoriesBloc,
               listener: (context, state) {
-                if(state is CategoriesLoadedState){
+                if (state is CategoriesLoadedState) {
                   categories = state.viewAll;
                 }
                 // TODO: implement listener
               },
               builder: (context, state) {
                 return ElevatedButton(
-                  onPressed: ()=>displayAddProductSheet(context, allCategories:categories),
+                  onPressed: () => displayAddProductSheet(context,
+                      allCategories: categories),
                   child: Text('Add New Product'),
                 );
               },
@@ -99,15 +100,13 @@ class _ClientAppState extends State<ClientApp> {
   }
 
   Future<Category> _findCategoryByName(String name) async {
-    var category = Category()
-      ..name = name;
+    var category = Category()..name = name;
     category = await stub!.getCategory(category);
     return category;
   }
 
   Future<Item> _findItemByName(String name) async {
-    var item = Item()
-      ..name = name;
+    var item = Item()..name = name;
     item = await stub!.getItem(item);
     return item;
   }
@@ -143,8 +142,7 @@ class _ClientAppState extends State<ClientApp> {
           ..categoryId = category.id;
         response = await stub!.createItem(item);
         print(
-            '✅ product created | name ${response.name} | id ${response
-                .id} | category id ${response.categoryId}');
+            '✅ product created | name ${response.name} | id ${response.id} | category id ${response.categoryId}');
       }
     }
     // Implement the add new product logic here

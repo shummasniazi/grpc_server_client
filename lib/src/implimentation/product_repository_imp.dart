@@ -37,7 +37,7 @@ class ProductRepositoryImp {
 
 
 
-  Future<Items> addNewProducts(String? productName, String? categoryName) async {
+  Future<Item> addNewProducts(String? productName, String? categoryName) async {
     channel = ClientChannel(
       'localhost',
       port: 50000,

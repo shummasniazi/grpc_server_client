@@ -28,11 +28,7 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     emit(AddProductLoadingState());
     try {
       final response = await repository.addNewProducts(event.productName,event.categoryName);
-      if (response.items.isEmpty) {
-
-      } else {
-        emit(AddProductLoadedState(viewAll: response));
-      }
+      emit(AddProductLoadedState(viewAll: response));
     } catch (e) {
       print(e.toString());
       //emit(ErrorState(error: e.toString()));

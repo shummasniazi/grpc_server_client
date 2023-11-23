@@ -10,7 +10,7 @@ class AddProductLoadingState extends ProductsState {}
 
 class AddProductLoadedState extends ProductsState {
   AddProductLoadedState({required this.viewAll});
-  final Items viewAll;
+  final Item viewAll;
 }
 
 class ProductNotAddedState extends ProductsState {}
