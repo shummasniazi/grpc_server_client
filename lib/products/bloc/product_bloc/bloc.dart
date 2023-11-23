@@ -21,6 +21,9 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     if (event is AddNewProduct) {
       await _mapEventAddNewProductsToState(event, emit);
     }
+    if (event is ViewAllProduct) {
+      await _mapEventViewAllProductsToState(event, emit);
+    }
   }
 
   FutureOr<void> _mapEventAddNewProductsToState(AddNewProduct event,
@@ -29,6 +32,19 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
     try {
       final response = await repository.addNewProducts(event.productName,event.categoryName);
       emit(AddProductLoadedState(viewAll: response));
+    } catch (e) {
+      print(e.toString());
+      //emit(ErrorState(error: e.toString()));
+    }
+  }
+
+
+  FutureOr<void> _mapEventViewAllProductsToState(ViewAllProduct event,
+      Emitter<ProductsState> emit) async {
+    emit(ViewAllProductLoadingState());
+    try {
+      final response = await repository.viewAllProducts();
+      emit(ViewAllProductLoadedState(viewAll: response));
     } catch (e) {
       print(e.toString());
       //emit(ErrorState(error: e.toString()));
