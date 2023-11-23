@@ -1,17 +1,16 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:grpc/grpc.dart';
-import 'package:grpc_client/view_all/ui/view_all_products.dart';
+import 'package:grpc_client/products/bloc/product_bloc/bloc.dart';
+import 'package:grpc_client/products/ui/view_all_products.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:grpc_client/view_all/view_all_product_bloc/bloc.dart';
 import 'dart_grpc_server.dart';
 
 void main() {
   runApp(MultiBlocProvider(
     providers: [
-      BlocProvider<ViewAllProductBloc>(
-          create: (context) => ViewAllProductBloc()),
+      BlocProvider<ProductsBloc>(
+          create: (context) => ProductsBloc()),
     ],
     child: MaterialApp(home: ClientApp()),
   ));

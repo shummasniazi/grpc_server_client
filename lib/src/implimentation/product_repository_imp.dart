@@ -4,15 +4,15 @@ import 'package:grpc/grpc.dart';
 import '../../dart_grpc_server.dart';
 
 
-class ViewAllRepositoryImp {
-  ViewAllRepositoryImp._internal();
-  static final ViewAllRepositoryImp _viewAllRepositoryImp =
-  ViewAllRepositoryImp._internal();
+class ProductRepositoryImp {
+  ProductRepositoryImp._internal();
+  static final ProductRepositoryImp _productRepositoryImp =
+  ProductRepositoryImp._internal();
   GroceriesServiceClient? stub;
   ClientChannel? channel;
   var response;
-  factory ViewAllRepositoryImp() {
-    return _viewAllRepositoryImp;
+  factory ProductRepositoryImp() {
+    return _productRepositoryImp;
   }
 
   Future<Items> viewAllProducts() async {
