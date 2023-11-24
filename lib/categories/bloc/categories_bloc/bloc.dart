@@ -28,12 +28,12 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
 
   FutureOr<void> _mapEventAddNewCategoryToState(
       AddNewCategory event, Emitter<CategoriesState> emit) async {
-    emit(CategoriesLoadingState());
+    emit(CreateCategoryLoadingState());
     try {
-      final response = await repository.getAllCategories();
+      final response = await repository.createCategory(event.categoryName);
       if (response.categories.isEmpty) {
       } else {
-        emit(CategoriesLoadedState(viewAll: response));
+        emit(CreateCategoryLoadedState(viewAll: response));
       }
     } catch (e) {
       print(e.toString());

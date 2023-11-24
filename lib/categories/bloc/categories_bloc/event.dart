@@ -2,7 +2,10 @@ abstract class CategoriesEvent {}
 
 class InitEvent extends CategoriesEvent {}
 
-class AddNewCategory extends CategoriesEvent {}
+class AddNewCategory extends CategoriesEvent {
+  final String? categoryName;
+  AddNewCategory(this.categoryName);
+}
 class AddNewCategoryLoading extends CategoriesEvent {}
 class AddNewCategoryLoaded extends CategoriesEvent {}
 class AddNewCategoryError extends CategoriesEvent {}

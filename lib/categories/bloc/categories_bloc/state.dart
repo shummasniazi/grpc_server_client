@@ -14,3 +14,13 @@ class CategoriesLoadedState extends CategoriesState {
 }
 
 class CategoriesNotAddedState extends CategoriesState {}
+
+
+class CreateCategoryLoadingState extends CategoriesState {}
+
+class CreateCategoryLoadedState extends CategoriesState {
+  CreateCategoryLoadedState({required this.viewAll});
+  final Categories viewAll;
+}
+
+class CreateCategoryErrorState extends CategoriesState {}
